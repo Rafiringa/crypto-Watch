@@ -16,7 +16,6 @@ const StarIcon = ({ coinId }) => {
 
   const idChecker = (id) => {
     let favList = null;
-
     if (window.localStorage.coinList) {
       favList = window.localStorage.coinList.split(",");
     }

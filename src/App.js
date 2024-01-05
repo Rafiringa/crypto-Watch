@@ -1,10 +1,9 @@
 import React, { useEffect, useState } from "react";
 import HeaderInfos from "./components/HeaderInfos";
-import GlobalChart from "./components/GlobalChart";
-import axios from "axios";
 import Table from "./components/Table";
+import GlobalChart from "./components/GlobalChart";
 import ToTop from "./components/ToTop";
-import { data } from "./db.js";
+import axios from "axios";
 
 const App = () => {
   const [coinsData, setCoinsData] = useState([]);

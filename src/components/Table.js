@@ -1,10 +1,14 @@
 import React, { useState } from "react";
+import { useSelector } from "react-redux";
 import TableLine from "./TableLine";
 import ToTop from "./ToTop";
+import { isStableCoin } from "./Utils";
 
 const Table = ({ coinsData }) => {
-  const [rangeNumber, setRangeNumber] = useState(100);
   const [orderBy, setOrderBy] = useState("");
+  const [rangeNumber, setRangeNumber] = useState(100);
+  const showStable = useSelector((state) => state.stableReducer.showStable);
+  const showFavList = useSelector((state) => state.listReducer.showList);
 
   const tableHeader = [
     "Prix",
@@ -15,7 +19,7 @@ const Table = ({ coinsData }) => {
     "1s",
     "1m",
     "6m",
-    "1a",
+    "1y",
     "ATH",
   ];
 
@@ -33,8 +37,8 @@ const Table = ({ coinsData }) => {
           </span>
           <input
             type="range"
-            min={1}
-            max={250}
+            min="1"
+            max="250"
             value={rangeNumber}
             onChange={(e) => setRangeNumber(e.target.value)}
           />
@@ -43,9 +47,6 @@ const Table = ({ coinsData }) => {
         {tableHeader.map((el) => (
           <li key={el}>
             <input
-              type="radio"
-              name="header-el"
-              id={el}
               defaultChecked={
                 el === orderBy || el === orderBy + "reverse" ? true : false
               }
@@ -56,6 +57,9 @@ const Table = ({ coinsData }) => {
                   setOrderBy(el);
                 }
               }}
+              type="radio"
+              name="header-el"
+              id={el}
             />
             <label htmlFor={el}>{el}</label>
           </li>
@@ -64,6 +68,25 @@ const Table = ({ coinsData }) => {
       {coinsData &&
         coinsData
           .slice(0, rangeNumber)
+          .filter((coin) => {
+            if (showStable) {
+              return coin;
+            } else {
+              if (isStableCoin(coin.symbol)) {
+                return coin;
+              }
+            }
+          })
+          .filter((coin) => {
+            if (showFavList) {
+              let list = window.localStorage.coinList.split(",");
+              if (list.includes(coin.id)) {
+                return coin;
+              }
+            } else {
+              return coin;
+            }
+          })
           .sort((a, b) => {
             switch (orderBy) {
               case "Prix":
@@ -149,7 +172,7 @@ const Table = ({ coinsData }) => {
             }
           })
           .map((coin, index) => (
-            <TableLine coin={coin} index={index} key={index} />
+            <TableLine coin={coin} key={coin.id} index={index} />
           ))}
     </div>
   );
